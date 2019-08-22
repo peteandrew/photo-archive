@@ -1,0 +1,23 @@
+{
+    "AttributeDefinitions": [
+        {
+            "AttributeName": "Tag",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "ImageID",
+            "AttributeType": "S"
+        }
+    ],
+    "TableName": "IA_TagsImages",
+    "KeySchema": [
+        {
+            "AttributeName": "Tag",
+            "KeyType": "HASH"
+        },
+        {
+            "AttributeName": "ImageID",
+            "KeyType": "RANGE"
+        }
+    ]
+}
