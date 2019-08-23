@@ -1,5 +1,5 @@
 #!env python
 
-import dynamo_access
+from dynamo_access import create_tables
 
-dynamo_access.create_tables()
+create_tables()

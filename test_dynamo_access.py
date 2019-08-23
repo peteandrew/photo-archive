@@ -1,48 +1,38 @@
+import unittest
 import boto3
 from moto import mock_dynamodb2
-from dynamo_access import get_images_for_month
+
+from dynamo_access import create_tables, get_images_for_month
 
 
 @mock_dynamodb2
-def test_get_images_for_month():
-    client = boto3.client('dynamodb')
-    response = client.put_item(
-        TableName='IA_Images',
-        Item={
+class TestGetImagesForMonth(unittest.TestCase):
+    def setUp(self):
+        create_tables()
+
+        client = boto3.client('dynamodb')
+        client.put_item(
+            TableName='IA_Images',
+            Item={
                 'ImageID': {
-                    'S': image_id
+                    'S': 'testid'
                 },
                 'CreatedYearMonth': {
-                    'S': created_year_month
+                    'S': '2019-08'
                 },
                 'TimeCreated': {
-                    'S': row[1]
+                    'S': '2019-08-23 23:17:00'
                 },
                 'CurrentFilename': {
-                    'S': row[0]
+                    'S': 'testfile.jpg'
                 },
-                'TimeProcessed': {
-                    'S': row[2]
-                },
-                'OriginalDirectory': {
-                    'S': row[3]
-                }
             }
         )
 
+    def test_get_images_for_month(self):
+        images = get_images_for_month('2019', '08')
+        self.assertEqual(len(images), 1)
 
 
-        conn = boto3.resource('s3', region_name='us-east-1')
-            # We need to create the bucket since this is all in Moto's 'virtual' AWS account
-                conn.create_bucket(Bucket='mybucket')
-
-                    model_instance = MyModel('steve', 'is awesome')
-                        model_instance.save()
-
-                            body = conn.Object('mybucket', 'steve').get()['Body'].read().decode("utf-8")
-
-                                assert body == 'is awesome'
-
-
-def get_images_for_month(year, month):
-
+if __name__ == '__main__':
+    unittest.main()

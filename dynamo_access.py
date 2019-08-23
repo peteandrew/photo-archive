@@ -90,6 +90,3 @@ def get_images_for_month(year, month):
     )
     return response['Items']
 
-if __name__ == '__main__':
-    create_tables()
-    #print(get_images_for_month('2019', '01'))
