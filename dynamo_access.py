@@ -1,3 +1,4 @@
+from dateutil.rrule import rrule, MONTHLY
 import boto3
 
 def create_tables():
@@ -75,18 +76,32 @@ def create_tables():
     )
 
 
-def get_images_for_month(year, month):
-    created_year_month = "{year}-{month}".format(year=year, month=month)
+def find_images(from_datetime, to_datetime):
+    dt_recurrences = rrule(MONTHLY, dtstart=from_datetime, until=to_datetime)
+
     client = boto3.client('dynamodb')
-    response = client.query(
-        TableName='IA_Images',
-        IndexName='ImagesTimeCreated',
-        KeyConditionExpression='CreatedYearMonth = :CreatedYearMonth',
-        ExpressionAttributeValues={
-            ':CreatedYearMonth': {
-                'S': created_year_month
+
+    images = []
+
+    for dt in dt_recurrences:
+        created_year_month = str(dt)[:7]
+        response = client.query(
+            TableName='IA_Images',
+            IndexName='ImagesTimeCreated',
+            KeyConditionExpression='CreatedYearMonth = :CreatedYearMonth AND TimeCreated BETWEEN :FromDateTime AND :ToDateTime',
+            ExpressionAttributeValues={
+                ':CreatedYearMonth': {
+                    'S': created_year_month
+                },
+                ':FromDateTime': {
+                    'S': str(from_datetime)
+                },
+                ':ToDateTime': {
+                    'S': str(to_datetime)
+                }
             }
-        }
-    )
-    return response['Items']
+        )
+        images += response['Items']
+
+    return images
 
