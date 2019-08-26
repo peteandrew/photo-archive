@@ -73,13 +73,13 @@ class TestFindImages(unittest.TestCase):
     def test_find_images_for_month(self):
         images = find_images(datetime(2019, 8, 1), datetime(2019, 8, 31))
         self.assertEqual(len(images), 2)
-        image_ids = [image['ImageID']['S'] for image in images]
+        image_ids = [image['image_id'] for image in images]
         self.assertTrue(set(image_ids) == set(['image2', 'image3']))
 
     def test_find_images_for_multiple_months(self):
         images = find_images(datetime(2019, 7, 1), datetime(2019, 8, 31))
         self.assertEqual(len(images), 3)
-        image_ids = [image['ImageID']['S'] for image in images]
+        image_ids = [image['image_id'] for image in images]
         self.assertTrue(set(image_ids) == set(['image1', 'image2', 'image3']))
 
     def test_find_no_images_for_month(self):
@@ -89,7 +89,7 @@ class TestFindImages(unittest.TestCase):
     def test_find_images_for_day(self):
         images = find_images(datetime(2019, 8, 1, 0, 0, 1), datetime(2019, 8, 1, 23, 59, 59))
         self.assertEqual(len(images), 1)
-        self.assertEqual(images[0]['ImageID']['S'], 'image2')
+        self.assertEqual(images[0]['image_id'], 'image2')
 
 if __name__ == '__main__':
     unittest.main()

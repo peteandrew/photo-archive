@@ -101,7 +101,7 @@ def find_images(from_datetime, to_datetime):
                 }
             }
         )
-        images += response['Items']
+        images += [{'image_id': image['ImageID']['S'], 'created_datetime': image['TimeCreated']['S']} for image in response['Items']]
 
     return images
 
