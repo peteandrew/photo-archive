@@ -105,3 +105,53 @@ def find_images(from_datetime, to_datetime):
 
     return images
 
+
+def image_details(image_id):
+    client = boto3.client('dynamodb')
+
+    response = client.query(
+        TableName='IA_Images',
+        KeyConditionExpression='ImageID = :ImageID',
+        ExpressionAttributeValues={
+            ':ImageID': {
+                'S': image_id
+            }
+        }
+    )
+
+    if len(response['Items']) == 0:
+        return None
+
+    image = response['Items'][0]
+    image_details = {
+        'image_id': image['ImageID']['S'],
+        'processed_datetime': image['TimeProcessed']['S'],
+        'created_datetime': image['TimeCreated']['S']
+    }
+    if 'CurrentFilename' in image:
+        image_details['current_filename'] = image['CurrentFilename']['S']
+    if 'OriginalDirectory' in image:
+        image_details['original_directory'] = image['OriginalDirectory']['S']
+    if 'GlacierState' in image:
+        image_details['glacier_state'] = image['GlacierState']['S']
+
+    return image_details
+
+
+def update_image_glacier_state(image_id, new_glacier_state):
+    client = boto3.client('dynamodb')
+
+    client.update_item(
+        TableName='IA_Images',
+        UpdateExpression='SET GlacierState = :NewState',
+        ExpressionAttributeValues={
+            ':NewState': {
+                'S': new_glacier_state
+            }
+        },
+        Key={
+            'ImageID': {
+                'S': image_id
+            }
+        }
+    )
